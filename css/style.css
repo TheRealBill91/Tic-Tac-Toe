@@ -1,0 +1,43 @@
+:root {
+    --default-font-size: 1.3rem;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    height: 100vh;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* min-height: 100vh; */
+    height: 100vh;
+    flex-direction: column;
+}
+
+header {
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: lightgray;
+}
+
+h1 {
+    font-size: var(--default-font-size);
+}
+
+.board-container {
+    display: grid;
+    grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
+    width: 36vw;
+    height: 50vh;
+    outline: 1px solid black;
+}
+
+.board-container>div {
+    border: 1px solid black;
+}
