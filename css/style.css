@@ -41,3 +41,11 @@ h1 {
 .board-container>div {
     border: 1px solid black;
 }
+
+.board-container>div {
+    border: 1px solid black;
+    font-size: 2.6rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
