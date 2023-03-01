@@ -33,7 +33,7 @@ h1 {
 .board-container {
     display: grid;
     grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
-    width: 36vw;
+    width: 500px;
     height: 50vh;
     outline: 1px solid black;
 }
