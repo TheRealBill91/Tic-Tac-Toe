@@ -38,14 +38,14 @@ h1 {
     outline: 1px solid black;
 }
 
-.board-container>div {
-    border: 1px solid black;
-}
 
-.board-container>div {
+.board-container>button {
     border: 1px solid black;
     font-size: 2.6rem;
     display: flex;
     justify-content: center;
     align-items: center;
+    height: auto;
+    width: auto;
+    border-radius: 0;
 }

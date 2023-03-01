@@ -229,8 +229,8 @@ button {
 button:hover,
 button:focus {
     outline: none;
-    background: #000;
-    color: #fff;
+    /* background: #000;
+    color: #fff; */
 }
 
 /* Gets rid of default search to remove restrictions */
@@ -281,7 +281,13 @@ button,
    * Remove the inner border and padding in Firefox.
    */
 
-button::-moz-focus-inner,
+
+   
+   
+   
+   
+   
+   ::-moz-focus-inner,
 [type="button"]::-moz-focus-inner,
 [type="reset"]::-moz-focus-inner,
 [type="submit"]::-moz-focus-inner {
