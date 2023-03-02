@@ -49,3 +49,16 @@ h1 {
     width: auto;
     border-radius: 0;
 }
+
+.topBar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+button.resetButton {
+    appearance: none;
+    width: 92px;
+    height: 36px;
+}

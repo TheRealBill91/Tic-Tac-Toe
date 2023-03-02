@@ -24,7 +24,9 @@ const gameBoard = (() => {
       return;
     }
 
-    gameController.switchPlayerTurn();
+
+    // Moved to playRound method
+    /* gameController.switchPlayerTurn(); */
     /* console.log(boardCellsWithValues[column]); */
     board[row][column].addToken(player);
   };
@@ -47,42 +49,52 @@ const gameBoard = (() => {
   return { printGameBoard, addPlayerSelection, getBoard };
 })();
 
-const checkForWin = (function () {
-  // Checking for horizontal (row) win
+// Checks whether there is a win or a tie
+const checkGameStatus = (function () {
+  // Checking for horizontal (row) win for each of the three rows
   const horizontalWin = () => {
+    let playerOneCounter = 0;
+    let playerTwoCounter = 0;
+    let winner;
     const boardCellsWithValues = gameBoard
       .getBoard()
       .map((row) => row.map((cell) => cell.getValue()));
-    boardCellsWithValues.forEach((row) => {
-      let playerOneCounter = 0;
-      let playerTwoCounter = 0;
-      const horizontalWin = row.filter((cell) => cell === "X" || cell === "O");
-      if (horizontalWin.length) {
-        row.forEach((cell) => {
-          cell === "X"
+    for (let i = 0; i < boardCellsWithValues.length; i++) {
+      const currentRow = boardCellsWithValues[i];
+      playerOneCounter = 0;
+      playerTwoCounter = 0;
+      const onlyPlayerMarkings = currentRow.filter((cell) => cell === "X" || cell === "O");
+      for (let j = 0; j < currentRow.length; j++) {
+        const currentCell = currentRow[j];
+        if (onlyPlayerMarkings.length === 3) {
+          currentCell === "X"
             ? playerOneCounter++
-            : cell === "O"
-            ? playerTwoCounter++
-            : null;
+            : currentCell === "O"
+              ? playerTwoCounter++
+              : null;
           if (playerOneCounter === 3) {
-            console.log("Player One Wins");
+            winner = `Winner: ${gameController.getCurrentPlayer().name}`;
             // eslint-disable-next-line no-useless-return
-            return;
+            return winner;
           } else if (playerTwoCounter === 3) {
-            console.log("Player Two Wins");
+            winner = `Winner: ${gameController.getCurrentPlayer().name}`;
             // eslint-disable-next-line no-useless-return
-            return;
+            return winner;
           }
-        });
+        }
       }
-    });
+    }
   };
 
+
+  // Checking for vertical (column) win for each of the three columns
   const verticalWin = () => {
     let playerOneCounter = 0;
     let playerTwoCounter = 0;
     let winner;
     for (let i = 0; i < gameBoard.getBoard().length; i++) {
+      playerOneCounter = 0;
+      playerTwoCounter = 0;
       const currentColumn = gameBoard
         .getBoard()
         .map((row) => row[i].getValue());
@@ -91,12 +103,12 @@ const checkForWin = (function () {
       );
       for (let j = 0; j < currentColumn.length; j++) {
         const currentCell = currentColumn[j];
-        if (onlyPlayerMarkings.length) {
+        if (onlyPlayerMarkings.length === 3) {
           currentCell === "X"
             ? playerOneCounter++
             : currentCell === "O"
-            ? playerTwoCounter++
-            : null;
+              ? playerTwoCounter++
+              : null;
           if (playerOneCounter === 3) {
             winner = `Winner: ${gameController.getCurrentPlayer().name}`;
             // eslint-disable-next-line no-useless-return
@@ -109,10 +121,58 @@ const checkForWin = (function () {
           }
         }
       }
+
     }
   };
 
-  return { horizontalWin, verticalWin };
+
+  const diagonalWin = () => {
+    /*  let playerOneCounter = 0;
+     let playerTwoCounter = 0; */
+    let winner;
+    let playerValues = [];
+    const board = gameBoard.getBoard();
+    // check for top left to bottom right
+    const boardCellsWithValues = gameBoard
+      .getBoard()
+      .map((row) => row.map((cell) => cell.getValue()));
+    for (let i = 0; i <= 2; i++) {
+      const currentRow = boardCellsWithValues[i];
+      for (let j = 0; j < 1; j++) {
+        const currentCell = currentRow[i];
+        playerValues.push(currentCell)
+      }
+    }
+
+    const playerOneWin = playerValues.filter((value => value === "X"));
+    const playerTwoWin = playerValues.filter((value => value === "O"));
+
+    if (playerOneWin.length === 3) {
+      winner = `Winner: ${gameController.getCurrentPlayer().name}`;
+      return winner;
+    } else if (playerTwoWin.length === 3) {
+      winner = `Winner: ${gameController.getCurrentPlayer().name}`;
+      return winner;
+    }
+
+
+
+
+  }
+
+  /*  const tieResult = () => {
+     const boardCellsWithValues = gameBoard
+       .getBoard()
+       .map((row) => row.map((cell) => cell.getValue()));
+     const onlyZeros = boardCellsWithValues
+       .map((row) => row.filter(cellValue => cellValue === 0));
+ 
+   }
+  */
+
+
+
+  return { horizontalWin, verticalWin, diagonalWin };
 })();
 
 // Logic for adding player selections and retrieving player selections
@@ -123,11 +183,16 @@ function Cell() {
     value = player;
   };
 
+  const removeToken = () => {
+    value = 0;
+  }
+
   const getValue = () => value;
 
   return {
     addToken,
     getValue,
+    removeToken
   };
 }
 
@@ -159,19 +224,27 @@ const gameController = (function () {
   };
 
   const playRound = (column, row) => {
-    let winResult;
+    let horizontalResult;
+    let verticalResult;
+    let diagonalResult;
     console.log(
-      `${
-        getCurrentPlayer().name
+      `${getCurrentPlayer().name
       } placed his marker on row ${row}, column ${column}`
     );
     gameBoard.addPlayerSelection(column, row, getCurrentPlayer().value);
-    winResult = checkForWin.horizontalWin();
+    horizontalResult = checkGameStatus.horizontalWin();
+    verticalResult = checkGameStatus.verticalWin();
+    diagonalResult = checkGameStatus.diagonalWin();
 
-    if (!winResult) {
-      winResult = checkForWin.verticalWin();
+    if (horizontalResult) {
+      return horizontalResult
+    } else if (verticalResult) {
+      return verticalResult
+    } else if (diagonalResult) {
+      return diagonalResult
     }
-    console.log(winResult);
+
+    switchPlayerTurn();
     gameBoard.printGameBoard(row, column);
     /*  switchPlayerTurn(); */
   };
@@ -181,11 +254,14 @@ const gameController = (function () {
 
 function displayController() {
   const boardDiv = document.querySelector(".board-container");
-
+  const gameResultDiv = document.querySelector(".gameResult")
+  const topBarDiv = document.querySelector(".topBar");
   const board = gameBoard.getBoard();
 
-  const updateBoard = () => {
+
+  const updateBoard = (roundResult) => {
     boardDiv.innerHTML = "";
+    gameResultDiv.textContent = roundResult
     for (let i = 0; i < board.length; i++) {
       const currentRow = board[i];
       for (let j = 0; j < currentRow.length; j++) {
@@ -204,14 +280,42 @@ function displayController() {
     }
   };
 
+  const boardReset = () => {
+
+    boardDiv.removeEventListener("click", clickHandler);
+    const resetButton = document.createElement("button");
+    // Change this to play again or create seperate play again button eventually
+    resetButton.textContent = "Reset"
+    resetButton.classList.add("resetButton");
+    topBarDiv.appendChild(resetButton);
+    resetButton.addEventListener("click", boardResetHandler)
+  }
+
+  function boardResetHandler(e) {
+    gameResultDiv.textContent = "";
+    e.target.remove();
+    board.forEach(row => {
+      row.forEach(cell => {
+        cell.removeToken();
+      })
+    })
+    updateBoard();
+    boardDiv.addEventListener("click", clickHandler);
+  }
+
   function clickHandler(e) {
     const selectedColumn = e.target.dataset.column;
     const selectedRow = e.target.dataset.row;
 
     if (!selectedColumn || !selectedRow) return;
 
-    gameController.playRound(selectedColumn, selectedRow);
-    updateBoard();
+
+
+    const roundResult = gameController.playRound(selectedColumn, selectedRow);
+    updateBoard(roundResult);
+    if (roundResult) {
+      boardReset();
+    }
   }
 
   updateBoard();
@@ -229,3 +333,4 @@ displayController();
 
 /* gameBoard.getGameBoard(); */
 /* gameController.playRound(); */
+console.log(gameBoard.getBoard()[0].getValue());
