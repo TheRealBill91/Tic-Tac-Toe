@@ -15,18 +15,14 @@ const gameBoard = (() => {
   const getBoard = () => board;
 
   const addPlayerSelection = (column, row, player) => {
-    /* const boardCellsWithValues = board.map((row) => row.map((cell) => cell.getValue())); */
     const selectedRowArray = board[row];
-    console.log(selectedRowArray);
+    // console.log(selectedRowArray);
     const rowCellsWithValues = selectedRowArray.map((cell) => cell.getValue());
     // Check if board spot is taken
     if (!(rowCellsWithValues[column] === 0)) {
       return;
     }
-
-    // Moved to playRound method
-    /* gameController.switchPlayerTurn(); */
-    /* console.log(boardCellsWithValues[column]); */
+    
     board[row][column].addToken(player);
   };
 
@@ -34,12 +30,10 @@ const gameBoard = (() => {
     let boardCellsWithValues = board.map((row) =>
       row.map((cell) => cell.getValue())
     );
-    console.log(boardCellsWithValues);
-    /*  console.log(boardCellsWithValues.map(row => row[column])); */
-    /*  console.log(board.map(row => row[1].getValue())); */
+    // console.log(boardCellsWithValues);
+    
   };
 
-  /*    const boardCellsWithValues = board.map((row) => row.map((cell) => cell.getValue())); */
 
   return { printGameBoard, addPlayerSelection, getBoard };
 })();
@@ -306,13 +300,17 @@ const gameController = (function () {
 
 function displayController() {
   const boardDiv = document.querySelector(".board-container");
-  const gameResultDiv = document.querySelector(".gameResult");
   const topBarDiv = document.querySelector(".topBar");
+  const mainElement = document.querySelector("main");
+  const resetButton = document.createElement("button");
+
+  const gameResultDiv = document.createElement("div");
+
   const board = gameBoard.getBoard();
 
   const updateBoard = (roundResult) => {
     boardDiv.innerHTML = "";
-    gameResultDiv.textContent = roundResult;
+
     for (let i = 0; i < board.length; i++) {
       const currentRow = board[i];
       for (let j = 0; j < currentRow.length; j++) {
@@ -331,25 +329,41 @@ function displayController() {
     }
   };
 
-  const boardReset = () => {
+  const playAgain = (roundResult) => {
     boardDiv.removeEventListener("click", clickHandler);
-    const resetButton = document.createElement("button");
-    // Change this to play again or create seperate play again button eventually
-    resetButton.textContent = "Reset";
+    const playAgainButton = document.createElement("button");
+    playAgainButton.textContent = "Play Again";
+    playAgainButton.classList.add("playAgainButton");
+    gameResultDiv.classList.add("gameResult");
+    gameResultDiv.textContent = roundResult;
+
+    mainElement.prepend(gameResultDiv);
+    topBarDiv.append(playAgainButton);
+    playAgainButton.addEventListener("click", boardResetHandler);
+    topBarDiv.removeChild(resetButton);
+  };
+
+  const boardResetListen = () => {
     resetButton.classList.add("resetButton");
+    resetButton.textContent = "Reset";
     topBarDiv.appendChild(resetButton);
     resetButton.addEventListener("click", boardResetHandler);
   };
 
   function boardResetHandler(e) {
     gameResultDiv.textContent = "";
-    e.target.remove();
+    if (e.target.className === "playAgainButton") {
+      e.target.remove();
+      mainElement.removeChild(gameResultDiv);
+    }
+
     board.forEach((row) => {
       row.forEach((cell) => {
         cell.removeToken();
       });
     });
     updateBoard();
+    boardResetListen();
     boardDiv.addEventListener("click", clickHandler);
   }
 
@@ -360,13 +374,14 @@ function displayController() {
     if (!selectedColumn || !selectedRow) return;
 
     const roundResult = gameController.playRound(selectedColumn, selectedRow);
-    updateBoard(roundResult);
+    updateBoard();
     if (roundResult) {
-      boardReset();
+      playAgain(roundResult);
     }
   }
 
   updateBoard();
+  boardResetListen();
   boardDiv.addEventListener("click", clickHandler);
 }
 
