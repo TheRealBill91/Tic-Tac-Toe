@@ -58,8 +58,6 @@ h1 {
   width: 500px;
 }
 
-
-
 button.resetButton,
 button.playAgainButton {
   appearance: none;
@@ -68,12 +66,42 @@ button.playAgainButton {
 }
 
 .gameResult {
-    height: 57px;
-    /* outline: 1px solid black; */
-    width: 400px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2rem;
-    margin-bottom: 12px;
+  height: 57px;
+  /* outline: 1px solid black; */
+  width: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+.playBtn {
+  appearance: none;
+  width: 160px;
+  height: 80px;
+  background-color: lightblue;
+}
+
+.formDiv {
+  outline: 1px solid black;
+  width: 450px;
+  height: 450px;
+  flex-direction: column;
+  gap: 8px;
+  display: none;
+  transition: 0.1s ease-in;
+}
+
+.playerOneInputLabel,
+.playerTwoInputLabel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+}
+
+.startGameButton {
+  width: 60px;
+  height: 60px;
 }

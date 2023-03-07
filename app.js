@@ -22,7 +22,7 @@ const gameBoard = (() => {
     if (!(rowCellsWithValues[column] === 0)) {
       return;
     }
-    
+
     board[row][column].addToken(player);
   };
 
@@ -31,9 +31,7 @@ const gameBoard = (() => {
       row.map((cell) => cell.getValue())
     );
     // console.log(boardCellsWithValues);
-    
   };
-
 
   return { printGameBoard, addPlayerSelection, getBoard };
 })();
@@ -233,34 +231,110 @@ function Cell() {
   };
 }
 
-const gameController = (function () {
-  const playerOneName = "Player One";
-  const playerTwoName = "Player Two";
-  const players = {
-    playerOne: {
-      name: playerOneName,
-      value: "X",
-    },
-    playerTwo: {
-      name: playerTwoName,
-      value: "O",
-    },
+const playerCreator = () => {
+  const players = [];
+
+  const getPlayers = () => players;
+
+  let currentPlayer = players[0];
+  const getCurrentPlayer = () => players[0];
+
+  const addPlayer = (name, value) => {
+    players[name] = { name, value };
   };
 
-  let currentPlayer = players.playerOne;
-  const getCurrentPlayer = () => currentPlayer;
-
-  const switchPlayerTurn = () => {
-    if (currentPlayer === players.playerOne) {
-      currentPlayer = players.playerTwo;
-      console.log(`It's ${getCurrentPlayer().name}'s turn`);
+  const switchPlayer = (name) => {
+    console.log(gameController.shallowEqual(currentPlayer, getPlayers()[name]));
+    if (gameController.shallowEqual(currentPlayer, getPlayers()[name])) {
+      currentPlayer = getPlayers()[name];
+      console.log(`It's ${getPlayers()[name].name}s turn`);
     } else {
-      currentPlayer = players.playerOne;
-      console.log(`It's ${getCurrentPlayer().name}'s turn`);
+      currentPlayer = getPlayers()[name];
     }
   };
+  return { addPlayer, getPlayers, getCurrentPlayer, switchPlayer };
+};
+
+const gameController = (() => {
+  // keep until playerCreator funtion that creates the two player objects
+  // is fully implemented
+  //   const playerOneName = "Player One";
+  //   const playerTwoName = "Player Two";
+  //   const playerss = {
+  //     playerOne: {
+  //       name: playerOneName,
+  //       value: "X",
+  //     },
+  //     playerTwo: {
+  //       name: playerTwoName,
+  //       value: "O",
+  //     },
+  //   };
+
+  const playerSetup = () => {
+    let players;
+    let playerOneInput = document.querySelector(".playerOneInput");
+    let playerTwoInput = document.querySelector(".playerTwoInput");
+
+    const { switchPlayer } = playerCreator();
+
+    let playerOneName = playerOneInput.value;
+    let playerTwoName = playerTwoInput.value;
+    players = playerCreator();
+    players.addPlayer(playerOneName, "X");
+    players.addPlayer(playerTwoName, "O");
+
+    const getCurrentPlayer = () => currentPlayer;
+
+    const getPlayers = () => players.getPlayers();
+    let currentPlayer = getPlayers()[playerOneName];
+    return {
+      players,
+      playerOneName,
+      playerTwoName,
+      getPlayers,
+      getCurrentPlayer,
+      switchPlayer,
+    };
+  };
+
+  //   console.log(currentPlayer);
+
+  // checks if two objects property values are equal
+  function shallowEqual(object1, object2) {
+    const keys1 = Object.keys(object1);
+    const keys2 = Object.keys(object2);
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+    for (let key of keys1) {
+      if (object1[key] !== object2[key]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  //   const switchPlayerTurn = (currentPlayer) => {
+  //     const playerOneName = playerSetup().playerOneName;
+  //     let currentPlayerr = playerSetup().getCurrentPlayer();
+  //     const playerTwoName = playerSetup().playerTwoName;
+  //     const playerOne = getPlayers().players[playerOneName];
+  //     console.log("currentPlayer:", playerSetup().getCurrentPlayer());
+  //     console.log("playerOne:", getPlayers().players[playerOneName]);
+  //     if (shallowEqual(currentPlayerr, playerOne)) {
+  //       currentPlayerr = getPlayers().players[playerTwoName];
+  //       console.log(`It's ${currentPlayer.name}'s turn`);
+  //     } else {
+  //       currentPlayer = getPlayers().players[playerOneName];
+  //       console.log(`It's ${currentPlayer.name}'s turn`);
+  //     }
+  //   };
 
   const playRound = (column, row) => {
+    const playerOneName = playerSetup().playerOneName;
+    const playerTwoName = playerSetup().playerTwoName;
+    let currentPlayer = playerSetup().getCurrentPlayer();
     let horizontalResult;
     let verticalResult;
     let checkTopLeftToBottomRight;
@@ -268,10 +342,14 @@ const gameController = (function () {
     let tieResult;
     console.log(
       `${
-        getCurrentPlayer().name
+        playerSetup().getCurrentPlayer().name
       } placed his marker on row ${row}, column ${column}`
     );
-    gameBoard.addPlayerSelection(column, row, getCurrentPlayer().value);
+    gameBoard.addPlayerSelection(
+      column,
+      row,
+      playerSetup().getCurrentPlayer().value
+    );
     horizontalResult = checkGameStatus.horizontalWin();
     verticalResult = checkGameStatus.verticalWin();
     checkTopLeftToBottomRight = checkGameStatus.checkTopLeftToBottomRight();
@@ -290,25 +368,61 @@ const gameController = (function () {
       return tieResult;
     }
 
-    switchPlayerTurn();
+    playerSetup().switchPlayer();
     gameBoard.printGameBoard(row, column);
     /*  switchPlayerTurn(); */
   };
 
-  return { switchPlayerTurn, getCurrentPlayer, playRound };
+  return { playRound, playerSetup, shallowEqual };
 })();
 
-function displayController() {
+const displayController = (() => {
   const boardDiv = document.querySelector(".board-container");
   const topBarDiv = document.querySelector(".topBar");
   const mainElement = document.querySelector("main");
   const resetButton = document.createElement("button");
+  // Get player one and two input
 
   const gameResultDiv = document.createElement("div");
 
+  let players;
+
+  const getPlayers = () => players.players;
+
   const board = gameBoard.getBoard();
 
+  const preGameSetup = (() => {
+    const playBtn = document.querySelector(".playBtn");
+    const formDiv = document.querySelector(".formDiv");
+
+    playBtn.addEventListener("click", () => {
+      // hide play button
+      playBtn.style.display = "none";
+
+      // make form div and child elements visible
+      formDiv.style.display = "flex";
+      formDiv.addEventListener("submit", startGame);
+    });
+
+    const startGame = (event) => {
+      event.preventDefault();
+      gameController.playerSetup();
+      formDiv.style.display = "none";
+
+      const topBarDiv = document.createElement("div");
+      topBarDiv.classList.add("topBar");
+      const boardDiv = document.createElement("div");
+      boardDiv.classList.add("board-container");
+
+      mainElement.append(topBarDiv, boardDiv);
+      updateBoard();
+      boardResetListen();
+      boardDiv.addEventListener("click", (e) => clickHandler(e));
+    };
+  })();
+
   const updateBoard = (roundResult) => {
+    const boardDiv = document.querySelector(".board-container");
     boardDiv.innerHTML = "";
 
     for (let i = 0; i < board.length; i++) {
@@ -330,6 +444,8 @@ function displayController() {
   };
 
   const playAgain = (roundResult) => {
+    const boardDiv = document.querySelector(".board-container");
+    const topBarDiv = document.querySelector(".topBar");
     boardDiv.removeEventListener("click", clickHandler);
     const playAgainButton = document.createElement("button");
     playAgainButton.textContent = "Play Again";
@@ -346,11 +462,13 @@ function displayController() {
   const boardResetListen = () => {
     resetButton.classList.add("resetButton");
     resetButton.textContent = "Reset";
+    const topBarDiv = document.querySelector(".topBar");
     topBarDiv.appendChild(resetButton);
     resetButton.addEventListener("click", boardResetHandler);
   };
 
   function boardResetHandler(e) {
+    const boardDiv = document.querySelector(".board-container");
     gameResultDiv.textContent = "";
     if (e.target.className === "playAgainButton") {
       e.target.remove();
@@ -364,28 +482,26 @@ function displayController() {
     });
     updateBoard();
     boardResetListen();
-    boardDiv.addEventListener("click", clickHandler);
   }
 
   function clickHandler(e) {
     const selectedColumn = e.target.dataset.column;
     const selectedRow = e.target.dataset.row;
 
+    console.log(displayController.players);
+
     if (!selectedColumn || !selectedRow) return;
 
     const roundResult = gameController.playRound(selectedColumn, selectedRow);
+
     updateBoard();
     if (roundResult) {
       playAgain(roundResult);
     }
   }
 
-  updateBoard();
-  boardResetListen();
-  boardDiv.addEventListener("click", clickHandler);
-}
-
-displayController();
+  return { getPlayers, players };
+})();
 
 /* gameBoard.printGameBoard(); */
 
