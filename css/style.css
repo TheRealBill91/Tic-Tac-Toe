@@ -16,6 +16,7 @@ main {
   /* min-height: 100vh; */
   height: 100vh;
   flex-direction: column;
+  gap: 8px;
 }
 
 header {
@@ -24,6 +25,8 @@ header {
   justify-content: center;
   align-items: center;
   background-color: lightgray;
+  height: 65px;
+  padding: 8px 0px;
 }
 
 h1 {
@@ -54,7 +57,7 @@ h1 {
   gap: 10px;
   align-items: center;
   justify-content: space-evenly;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   width: 500px;
 }
 
@@ -75,9 +78,7 @@ button.resetButton:hover,
 button.playAgainButton:hover {
   background-color: rgb(143, 143, 143);
   transform: scale(1.01);
-
 }
-
 
 .gameResult {
   height: 57px;
@@ -87,7 +88,7 @@ button.playAgainButton:hover {
   justify-content: center;
   align-items: center;
   font-size: 2rem;
-  margin-bottom: 12px;
+  margin-bottom: 4px;
   transition: 0.1s ease-in-out;
 }
 
