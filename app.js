@@ -62,11 +62,15 @@ const checkGameStatus = (function () {
             ? playerTwoCounter++
             : null;
           if (playerOneCounter === 3) {
-            winner = `Winner: ${gameController.getCurrentPlayer().name}`;
+            winner = `Winner: ${
+              gameController.playerSetup.getCurrentPlayer().name
+            }`;
             // eslint-disable-next-line no-useless-return
             return winner;
           } else if (playerTwoCounter === 3) {
-            winner = `Winner: ${gameController.getCurrentPlayer().name}`;
+            winner = `Winner: ${
+              gameController.playerSetup.getCurrentPlayer().name
+            }`;
             // eslint-disable-next-line no-useless-return
             return winner;
           }
@@ -98,11 +102,15 @@ const checkGameStatus = (function () {
             ? playerTwoCounter++
             : null;
           if (playerOneCounter === 3) {
-            winner = `Winner: ${gameController.getCurrentPlayer().name}`;
+            winner = `Winner: ${
+              gameController.playerSetup.getCurrentPlayer().name
+            }`;
             // eslint-disable-next-line no-useless-return
             return winner;
           } else if (playerTwoCounter === 3) {
-            winner = `Winner: ${gameController.getCurrentPlayer().name}`;
+            winner = `Winner: ${
+              gameController.playerSetup.getCurrentPlayer().name
+            }`;
             console.log("Player Two Wins");
             // eslint-disable-next-line no-useless-return
             return winner;
@@ -135,10 +143,10 @@ const checkGameStatus = (function () {
     const playerTwoWin = playerValues.filter((value) => value === "O");
 
     if (playerOneWin.length === 3) {
-      winner = `Winner: ${gameController.getCurrentPlayer().name}`;
+      winner = `Winner: ${gameController.playerSetup.getCurrentPlayer().name}`;
       return winner;
     } else if (playerTwoWin.length === 3) {
-      winner = `Winner: ${gameController.getCurrentPlayer().name}`;
+      winner = `Winner: ${gameController.playerSetup.getCurrentPlayer().name}`;
       return winner;
     }
   };
@@ -169,10 +177,10 @@ const checkGameStatus = (function () {
     const playerTwoWin = playerValues.filter((value) => value === "O");
 
     if (playerOneWin.length === 3) {
-      winner = `Winner: ${gameController.getCurrentPlayer().name}`;
+      winner = `Winner: ${gameController.playerSetup.getCurrentPlayer().name}`;
       return winner;
     } else if (playerTwoWin.length === 3) {
-      winner = `Winner: ${gameController.getCurrentPlayer().name}`;
+      winner = `Winner: ${gameController.playerSetup.getCurrentPlayer().name}`;
       return winner;
     }
   };
@@ -240,63 +248,68 @@ const playerCreator = () => {
   const getCurrentPlayer = () => players[0];
 
   const addPlayer = (name, value) => {
-    players[name] = { name, value };
+    // players[name] = { name, value };
+    players.push({ name, value });
   };
 
-  const switchPlayer = (name) => {
-    console.log(gameController.shallowEqual(currentPlayer, getPlayers()[name]));
-    if (gameController.shallowEqual(currentPlayer, getPlayers()[name])) {
-      currentPlayer = getPlayers()[name];
-      console.log(`It's ${getPlayers()[name].name}s turn`);
-    } else {
-      currentPlayer = getPlayers()[name];
-    }
-  };
-  return { addPlayer, getPlayers, getCurrentPlayer, switchPlayer };
+  return { addPlayer, getPlayers, getCurrentPlayer };
 };
 
 const gameController = (() => {
-  // keep until playerCreator funtion that creates the two player objects
-  // is fully implemented
-  //   const playerOneName = "Player One";
-  //   const playerTwoName = "Player Two";
-  //   const playerss = {
-  //     playerOne: {
-  //       name: playerOneName,
-  //       value: "X",
-  //     },
-  //     playerTwo: {
-  //       name: playerTwoName,
-  //       value: "O",
-  //     },
-  //   };
-
-  const playerSetup = () => {
+  const playerSetup = (() => {
     let players;
-    let playerOneInput = document.querySelector(".playerOneInput");
-    let playerTwoInput = document.querySelector(".playerTwoInput");
 
     const { switchPlayer } = playerCreator();
 
-    let playerOneName = playerOneInput.value;
-    let playerTwoName = playerTwoInput.value;
-    players = playerCreator();
-    players.addPlayer(playerOneName, "X");
-    players.addPlayer(playerTwoName, "O");
+    let playerOneName;
 
-    const getCurrentPlayer = () => currentPlayer;
+    let playerTwoName;
+
+    players = playerCreator();
+    const addPlayerOne = () => players.addPlayer(playerOneName, "X");
+    const addPlayerTwo = () => players.addPlayer(playerTwoName, "O");
+
+    const setPlayerOneName = () => {
+      const playerOneInput = document.querySelector(".playerOneInput");
+      playerOneName = playerOneInput.value;
+    };
+
+    const setPlayerTwoName = () => {
+      const playerTwoInput = document.querySelector(".playerTwoInput");
+      playerTwoName = playerTwoInput.value;
+    };
+
+    let currentPlayer;
+    const changePlayer = () => {
+      if (shallowEqual(currentPlayer, getPlayers()[0])) {
+        currentPlayer = getPlayers()[1];
+        console.log(`It's ${currentPlayer.name}s turn`);
+      } else {
+        currentPlayer = getPlayers()[0];
+        console.log(`It's ${currentPlayer.name}s turn`);
+      }
+    };
+
+    // sets starting player as player one
+    const setCurrentPlayer = () => {
+      currentPlayer = getPlayers()[0];
+    };
 
     const getPlayers = () => players.getPlayers();
-    let currentPlayer = getPlayers()[playerOneName];
+    console.log(players.getPlayers());
+
+    const getCurrentPlayer = () => currentPlayer;
     return {
-      players,
-      playerOneName,
-      playerTwoName,
       getPlayers,
+      setCurrentPlayer,
       getCurrentPlayer,
-      switchPlayer,
+      changePlayer,
+      setPlayerOneName,
+      setPlayerTwoName,
+      addPlayerOne,
+      addPlayerTwo,
     };
-  };
+  })();
 
   //   console.log(currentPlayer);
 
@@ -315,40 +328,22 @@ const gameController = (() => {
     return true;
   }
 
-  //   const switchPlayerTurn = (currentPlayer) => {
-  //     const playerOneName = playerSetup().playerOneName;
-  //     let currentPlayerr = playerSetup().getCurrentPlayer();
-  //     const playerTwoName = playerSetup().playerTwoName;
-  //     const playerOne = getPlayers().players[playerOneName];
-  //     console.log("currentPlayer:", playerSetup().getCurrentPlayer());
-  //     console.log("playerOne:", getPlayers().players[playerOneName]);
-  //     if (shallowEqual(currentPlayerr, playerOne)) {
-  //       currentPlayerr = getPlayers().players[playerTwoName];
-  //       console.log(`It's ${currentPlayer.name}'s turn`);
-  //     } else {
-  //       currentPlayer = getPlayers().players[playerOneName];
-  //       console.log(`It's ${currentPlayer.name}'s turn`);
-  //     }
-  //   };
-
   const playRound = (column, row) => {
-    const playerOneName = playerSetup().playerOneName;
-    const playerTwoName = playerSetup().playerTwoName;
-    let currentPlayer = playerSetup().getCurrentPlayer();
     let horizontalResult;
     let verticalResult;
     let checkTopLeftToBottomRight;
     let checkBottomLeftToTopRight;
     let tieResult;
+    console.log(playerSetup.getCurrentPlayer());
     console.log(
       `${
-        playerSetup().getCurrentPlayer().name
+        playerSetup.getCurrentPlayer().name
       } placed his marker on row ${row}, column ${column}`
     );
     gameBoard.addPlayerSelection(
       column,
       row,
-      playerSetup().getCurrentPlayer().value
+      playerSetup.getCurrentPlayer().value
     );
     horizontalResult = checkGameStatus.horizontalWin();
     verticalResult = checkGameStatus.verticalWin();
@@ -368,12 +363,16 @@ const gameController = (() => {
       return tieResult;
     }
 
-    playerSetup().switchPlayer();
+    playerSetup.changePlayer();
     gameBoard.printGameBoard(row, column);
     /*  switchPlayerTurn(); */
   };
 
-  return { playRound, playerSetup, shallowEqual };
+  return {
+    playRound,
+    shallowEqual,
+    playerSetup,
+  };
 })();
 
 const displayController = (() => {
@@ -406,7 +405,15 @@ const displayController = (() => {
 
     const startGame = (event) => {
       event.preventDefault();
-      gameController.playerSetup();
+      // const playerOneInput = document.querySelector(".playerOneInput");
+      // const playerOneName = playerOneInput.value;
+      // const playerTwoInput = document.querySelector(".playerTwoInput");
+      // const playerTwoName = playerTwoInput.value;
+      gameController.playerSetup.setPlayerOneName();
+      gameController.playerSetup.setPlayerTwoName();
+      gameController.playerSetup.addPlayerOne();
+      gameController.playerSetup.addPlayerTwo();
+      gameController.playerSetup.setCurrentPlayer();
       formDiv.style.display = "none";
 
       const topBarDiv = document.createElement("div");
