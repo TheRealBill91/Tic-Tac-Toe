@@ -63,7 +63,21 @@ button.playAgainButton {
   appearance: none;
   width: 92px;
   height: 36px;
+  border: none;
+  background: grey;
+  padding: 6px;
+  color: whitesmoke;
+  font-size: 0.8rem;
+  transition: 0.1s ease-in-out;
 }
+
+button.resetButton:hover,
+button.playAgainButton:hover {
+  background-color: rgb(143, 143, 143);
+  transform: scale(1.01);
+
+}
+
 
 .gameResult {
   height: 57px;
@@ -74,23 +88,43 @@ button.playAgainButton {
   align-items: center;
   font-size: 2rem;
   margin-bottom: 12px;
+  transition: 0.1s ease-in-out;
 }
 
 .playBtn {
   appearance: none;
   width: 160px;
   height: 80px;
-  background-color: lightblue;
+  background-color: grey;
+  color: whitesmoke;
+  font-size: 1.8rem;
+  border: none;
+  padding: 8px;
+  border-radius: 8px 8px;
+  transition: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.playBtn:hover {
+  background-color: rgb(145, 145, 145);
+  transform: scale(1.01);
 }
 
 .formDiv {
-  outline: 1px solid black;
-  width: 450px;
-  height: 450px;
+  /* outline: 1px solid black; */
+  width: 386px;
+  height: 378px;
   flex-direction: column;
   gap: 8px;
   display: none;
   transition: 0.1s ease-in;
+  justify-content: center;
+  background-color: rgb(228, 228, 228);
+  border: none;
+  border-radius: 12px 12px;
+}
+
+input {
+  background-color: white;
 }
 
 .playerOneInputLabel,
@@ -99,9 +133,26 @@ button.playAgainButton {
   flex-direction: column;
   justify-content: center;
   gap: 6px;
+  align-self: center;
 }
 
 .startGameButton {
-  width: 60px;
-  height: 60px;
+  width: 97px;
+  height: 50px;
+  justify-content: center;
+  align-self: center;
+  padding: 8px;
+  background-color: rgb(75 75 75);
+  border: none;
+  color: rgb(228 228 288);
+  margin-top: 8px;
+  transition: 0.1s ease-in-out;
+  font-size: 1.1rem;
+}
+
+.startGameButton:hover {
+  transform: scale(1.001);
+  background-color: rgb(105 105 105);
+  box-shadow: inset;
+  /* color: darkgrey; */
 }

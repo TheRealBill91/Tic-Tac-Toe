@@ -14,6 +14,8 @@ const gameBoard = (() => {
 
   const getBoard = () => board;
 
+  // This function adds a player's token to the selected cell on the board if it is empty.
+  // It takes in the column and row index of the selected cell and the player's token as arguments.
   const addPlayerSelection = (column, row, player) => {
     const selectedRowArray = board[row];
     // console.log(selectedRowArray);
