@@ -298,7 +298,6 @@ const gameController = (() => {
     };
 
     const getPlayers = () => players.getPlayers();
-    console.log(players.getPlayers());
 
     const getCurrentPlayer = () => currentPlayer;
     return {
@@ -336,7 +335,6 @@ const gameController = (() => {
     let checkTopLeftToBottomRight;
     let checkBottomLeftToTopRight;
     let tieResult;
-    console.log(playerSetup.getCurrentPlayer());
     console.log(
       `${
         playerSetup.getCurrentPlayer().name
@@ -388,13 +386,12 @@ const displayController = (() => {
 
   let players;
 
-  const getPlayers = () => players.players;
-
   const board = gameBoard.getBoard();
 
-  const preGameSetup = (() => {
+  const preGameSetup = () => {
     const playBtn = document.querySelector(".playBtn");
     const formDiv = document.querySelector(".formDiv");
+    const boardDiv = document.querySelector(".board-container");
 
     playBtn.addEventListener("click", () => {
       // hide play button
@@ -426,9 +423,9 @@ const displayController = (() => {
       mainElement.append(topBarDiv, boardDiv);
       updateBoard();
       boardResetListen();
-      boardDiv.addEventListener("click", (e) => clickHandler(e));
+      boardDiv.addEventListener("click", clickHandler);
     };
-  })();
+  };
 
   const updateBoard = (roundResult) => {
     const boardDiv = document.querySelector(".board-container");
@@ -490,6 +487,7 @@ const displayController = (() => {
       });
     });
     updateBoard();
+    boardDiv.addEventListener("click", clickHandler);
     boardResetListen();
   }
 
@@ -497,8 +495,7 @@ const displayController = (() => {
     const selectedColumn = e.target.dataset.column;
     const selectedRow = e.target.dataset.row;
 
-    console.log(displayController.players);
-
+    // return if user clicks on cell border instead of cell
     if (!selectedColumn || !selectedRow) return;
 
     const roundResult = gameController.playRound(selectedColumn, selectedRow);
@@ -509,7 +506,9 @@ const displayController = (() => {
     }
   }
 
-  return { getPlayers, players };
+  preGameSetup();
+
+  return { players };
 })();
 
 /* gameBoard.printGameBoard(); */
