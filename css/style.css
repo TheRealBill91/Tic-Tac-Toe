@@ -125,6 +125,7 @@ button.playAgainButton:hover {
 
 input {
   background-color: white;
+  border: none;
 }
 
 .playerOneInputLabel,
