@@ -92,6 +92,17 @@ button.playAgainButton:hover {
   transition: 0.1s ease-in-out;
 }
 
+.currentPlayerTurn {
+  height: 57px;
+  width: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  margin-bottom: 4px;
+  transition: 0.1s ease-in-out;
+}
+
 .playBtn {
   appearance: none;
   width: 160px;

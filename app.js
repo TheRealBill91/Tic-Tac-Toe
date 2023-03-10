@@ -404,10 +404,6 @@ const displayController = (() => {
 
     const startGame = (event) => {
       event.preventDefault();
-      // const playerOneInput = document.querySelector(".playerOneInput");
-      // const playerOneName = playerOneInput.value;
-      // const playerTwoInput = document.querySelector(".playerTwoInput");
-      // const playerTwoName = playerTwoInput.value;
       gameController.playerSetup.setPlayerOneName();
       gameController.playerSetup.setPlayerTwoName();
       gameController.playerSetup.addPlayerOne();
@@ -415,12 +411,17 @@ const displayController = (() => {
       gameController.playerSetup.setCurrentPlayer();
       formDiv.style.display = "none";
 
+      const playerTurn = document.createElement("div");
+      playerTurn.classList.add("currentPlayerTurn");
+      let currentPlayer = gameController.playerSetup.getCurrentPlayer().name;
+      playerTurn.textContent = `It's ${currentPlayer}s turn`;
+
       const topBarDiv = document.createElement("div");
       topBarDiv.classList.add("topBar");
       const boardDiv = document.createElement("div");
       boardDiv.classList.add("board-container");
 
-      mainElement.append(topBarDiv, boardDiv);
+      mainElement.append(playerTurn, topBarDiv, boardDiv);
       updateBoard();
       boardResetListen();
       boardDiv.addEventListener("click", clickHandler);
@@ -452,6 +453,7 @@ const displayController = (() => {
   const playAgain = (roundResult) => {
     const boardDiv = document.querySelector(".board-container");
     const topBarDiv = document.querySelector(".topBar");
+    const playerTurn = document.querySelector(".currentPlayerTurn");
     boardDiv.removeEventListener("click", clickHandler);
     const playAgainButton = document.createElement("button");
     playAgainButton.textContent = "Play Again";
@@ -459,6 +461,7 @@ const displayController = (() => {
     gameResultDiv.classList.add("gameResult");
     gameResultDiv.textContent = roundResult;
 
+    mainElement.removeChild(playerTurn);
     mainElement.prepend(gameResultDiv);
     topBarDiv.append(playAgainButton);
     playAgainButton.addEventListener("click", boardResetHandler);
@@ -471,21 +474,37 @@ const displayController = (() => {
     const topBarDiv = document.querySelector(".topBar");
     topBarDiv.appendChild(resetButton);
     resetButton.addEventListener("click", boardResetHandler);
+    const playerTurn = document.querySelector(".currentPlayerTurn");
   };
 
   function boardResetHandler(e) {
     const boardDiv = document.querySelector(".board-container");
     gameResultDiv.textContent = "";
+    const playerTurn = document.querySelector(".currentPlayerTurn");
+    const topBarDiv = document.querySelector(".topBar");
+
     if (e.target.className === "playAgainButton") {
+      const playerTurn = document.createElement("div");
       e.target.remove();
       mainElement.removeChild(gameResultDiv);
+      mainElement.insertBefore(playerTurn, topBarDiv);
+      playerTurn.classList.add("currentPlayerTurn");
+      let currentPlayer = gameController.playerSetup.getCurrentPlayer().name;
+      playerTurn.textContent = `It's ${currentPlayer}s turn`;
+    } else {
+      // Changes the current player back to player 1 after reset or win reset
+      gameController.playerSetup.setCurrentPlayer();
+      let currentPlayer = gameController.playerSetup.getCurrentPlayer().name;
+      playerTurn.textContent = `It's ${currentPlayer}s turn`;
     }
 
+    // Resets the value inside each cell to default (0)
     board.forEach((row) => {
       row.forEach((cell) => {
         cell.removeToken();
       });
     });
+
     updateBoard();
     boardDiv.addEventListener("click", clickHandler);
     boardResetListen();
@@ -494,11 +513,15 @@ const displayController = (() => {
   function clickHandler(e) {
     const selectedColumn = e.target.dataset.column;
     const selectedRow = e.target.dataset.row;
+    const playerTurn = document.querySelector(".currentPlayerTurn");
 
     // return if user clicks on cell border instead of cell
     if (!selectedColumn || !selectedRow) return;
 
     const roundResult = gameController.playRound(selectedColumn, selectedRow);
+
+    let currentPlayer = gameController.playerSetup.getCurrentPlayer().name;
+    playerTurn.textContent = `It's ${currentPlayer}s turn`;
 
     updateBoard();
     if (roundResult) {
